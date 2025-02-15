@@ -9,7 +9,7 @@ export default function Inbox() {
   return (
     <div className="flex">
       {/* Side Panel */}
-      <aside className="w-1/4 border-r">
+      <aside className="w-1/4 border-r bg-white">
         <div className="p-4">
           {/* Search Form */}
           <form action="">
@@ -71,7 +71,7 @@ export default function Inbox() {
     </div>
 
     {/* Layout for upcoming & outgoing messages */}
-<div className="p-4 space-y-4 h-[calc(100vh-150px)] overflow-y-auto">
+<div className="p-4 space-y-4 h-[calc(100vh-150px)] overflow-y-auto ">
   {/* Incoming Message */}
   <div className="flex items-start gap-3">
     <div className="bg-white rounded-lg p-3 max-w-xs">
@@ -123,7 +123,7 @@ export default function Inbox() {
 
 
       {/* Profile Details */}
-      <section className="w-1/3 relative">
+      <section className="w-1/3 relative bg-white">
       <div className="focus-within:border-blue-500 focus-within:ring focus-within:ring-blue-200 transition duration-200">
         <div className='flex px-2 py-2 border-b'>
         <div className='flex items-center justify-center gap-2'>

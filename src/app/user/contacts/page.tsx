@@ -10,13 +10,7 @@ const contact = [
     email: 'info@solsn.com',
     source: 'Google',
   },
-  {
-    id: 2,
-    name: 'Manraj Chauhan',
-    Attributes: 'Company:Meta',
-    email: 'contact@solsn.com',
-    source: 'Facebook',
-  },
+
 ];
 
 
@@ -24,16 +18,18 @@ export default function Contacts()
 
 {
   return (
-    <div className='contact-form'>
+    <>
+    <div className='p-4 bg-[#F5F6FA]'>
             <div className="pt-4 px-4">
             <h1 className="text-2xl font-bold tracking-tight mb-2">Contacts</h1>
             <p className="text-gray-600 text-lg mt-4 max-w-5xl">
   To get started, simply add your contacts here. This will allow you to easily reach out to them with personalized messages and campaigns. Make sure to keep your contact list updated for better engagement and smoother communication.
 </p>
         </div>
-        <div className='flex px-4 py-10 justify-between '>
+        </div>
+        <div className='flex px-4 py-10 justify-between bg-[#F5F6FA]'>
         <form action="">
-            <div className="flex bg-gray-100 border rounded-xl transition duration-200 ">
+            <div className="flex border bg-white rounded-xl transition duration-200 ">
               <img
                 src="/misc/search.svg"
                 alt="search"
@@ -41,7 +37,7 @@ export default function Contacts()
               />
               <input
                 type="search"
-                className="flex-1 px-4 py-2 bg-gray-100 outline-none rounded-xl transition duration-200"
+                className="flex-1 px-4 py-2 outline-none rounded-xl transition duration-200"
                 placeholder="Search here..."
               />
             </div>
@@ -52,7 +48,7 @@ export default function Contacts()
     </Link>
     </div>
         </div>
-    <div className="w-full bg-white rounded-2xl">
+    <div className="w-full bg-white rounded-2xl max-h-screen overflow-y-auto">
       <table className="min-w-full bg-white table-auto">
         <thead>
           <tr className="border-b">
@@ -89,6 +85,6 @@ export default function Contacts()
         </tbody>
       </table>
     </div>
-    </div>
+    </>
   );
 }

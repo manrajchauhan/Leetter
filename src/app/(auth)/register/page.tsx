@@ -1,141 +1,197 @@
-"use client"
+"use client";
+
+import { useState, useEffect } from "react";
+import { useForm, Controller } from "react-hook-form";
 import Link from "next/link";
 import { InputField } from "./InputField";
 import { SocialButton } from "./SocialButton";
+import { useRouter } from "next/navigation";
+import { toast, ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+
+interface FormData {
+  name: string;
+  surname: string;
+  email: string;
+  password: string;
+  mobile: string;
+}
 
 export default function Register() {
+  const { control, handleSubmit, formState: { errors }, reset } = useForm<FormData>();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string>("");
+  const router = useRouter();
 
-    const ListFeatures ={
-        f1:"Targeted Campaigns to deliver personalized offers",
-        f2:"Pre-built templates to send updates & reminders",
-        f3:"24x7 instant engagement with no-code chatbots",
-        f4:"Powerful automations to resolve issues faster",
-        }
+  useEffect(() => {
 
+    const token = localStorage.getItem("authToken");
+    if (token) {
+      router.push("/user/broadcast");
+    }
+  }, [router]);
 
-    const socialButtons = [
-      {
-        icon: "/google.svg",
-        links: "https//:accounts.google.com",
-        text: "Sign in with Google",
-        alt: "Google logo"
-      }
-    ];
+  const onSubmit = async (data: FormData) => {
+    setLoading(true);
+    setError("");
 
-    return (
-    <div className="font-[family-name:var(--font-geist-sans)]">
-        <Link href={"/"}>
-        <img
-    src="logo.svg"
-    width={200}
-    height={200}
-    className="pt-10 pl-10"
-    />
-    </Link>
-<div className="flex flex-row gap-[16.5rem] row-start-2 px-32">
-<div className="left px-20 py-32">
-    <div className="flex gap-0 justify-center items-center">
-        <form className="flex flex-col justify-center w-full">
-          <div className="flex flex-col w-full text-xs font-medium">
-            <div className="flex flex-col w-full">
-              <div className="flex flex-col w-full">
-                <h1 className="text-lg text-neutral-900">Sign Up into Solsn Identity</h1>
-                <div className="flex gap-10">
-                <InputField
-                  label="Name"
-                  type="text"
-                //   value="manrajchauhan2023@gmail.com"
-                  required
-                />
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.message);
+
+      const token = result.token;
+      localStorage.setItem("authToken", token);
+
+      // Show success toast
+      toast.success("User registered successfully! 🎉", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      reset();
+
+      setTimeout(() => {
+        router.push("/user/broadcast");
+      }, 5000);
+
+    } catch (err: any) {
+      setError(err.message || "Something went wrong!");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="login">
+      <Link href="/">
+        <img src="logo.svg" alt="Logo" width={200} height={200} className="pt-10 pl-10" />
+      </Link>
+
+      <div className="flex flex-row gap-[16.5rem] row-start-2 px-32">
+        <div className="px-20 py-32">
+          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col w-full">
+            <h1 className="text-lg text-neutral-900 font-medium">Sign Up into Leetter Identity</h1>
+
+            <div className="flex gap-10">
+              <Controller
+                name="name"
+                control={control}
+                defaultValue=""
+                rules={{ required: "Name is required" }}
+                render={({ field }) => (
                   <InputField
-                  label="Surname"
-                  type="text"
-                //   value="manrajchauhan2023@gmail.com"
-                  required
-                />
-                </div>
+                    {...field}
+                    label="Name"
+                    type="text"
+                    error={errors.name?.message}
+                  />
+                )}
+              />
+              <Controller
+                name="surname"
+                control={control}
+                defaultValue=""
+                rules={{ required: "Surname is required" }}
+                render={({ field }) => (
+                  <InputField
+                    {...field}
+                    label="Surname"
+                    type="text"
+                    error={errors.surname?.message}
+                  />
+                )}
+              />
+            </div>
+
+            <Controller
+              name="email"
+              control={control}
+              defaultValue=""
+              rules={{
+                required: "Email is required",
+                pattern: {
+                  value: /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/,
+                  message: "Invalid email address",
+                },
+              }}
+              render={({ field }) => (
                 <InputField
+                  {...field}
                   label="Business Email"
                   type="email"
-                //   value="manrajchauhan2023@gmail.com"
-                  required
+                  error={errors.email?.message}
                 />
+              )}
+            />
+
+            <Controller
+              name="password"
+              control={control}
+              defaultValue=""
+              rules={{ required: "Password is required" }}
+              render={({ field }) => (
                 <InputField
+                  {...field}
                   label="Password"
                   type="password"
-                //   value="*********"
-                  required
+                  error={errors.password?.message}
                 />
-                  <InputField
-                  label="Mobile"
-                  type="number"
-                //   value="*********"
-                  required
-                />
-              </div>
-            </div>
-            <button type="submit" className="overflow-hidden gap-1.5 self-stretch px-3 py-2.5 mt-6 w-full text-center text-white rounded-md bg-neutral-900 min-h-[32px] shadow-[0px_1px_2px_rgba(22,17,17,0.24)]">
-              Sign in
-            </button>
-          </div>
+              )}
+            />
 
-          <div className="flex gap-2.5 items-center mt-4 w-full text-xs font-medium text-center whitespace-nowrap text-neutral-900">
-            <img
-              loading="lazy"
-              src="/line.svg"
-              alt=""
-              className="object-contain flex-1 shrink self-stretch my-auto basis-0"
+            <Controller
+              name="mobile"
+              control={control}
+              defaultValue=""
+              rules={{ required: "Mobile number is required" }}
+              render={({ field }) => (
+                <InputField
+                  {...field}
+                  label="Mobile"
+                  type="tel"
+                  error={errors.mobile?.message}
+                />
+              )}
             />
-            <div className="self-stretch my-auto">OR</div>
-            <img
-              loading="lazy"
-            src="/line.svg"
-              alt=""
-              className="object-contain flex-1 shrink self-stretch my-auto basis-0"
-            />
+
+            {error && <p className="text-red-500">{error}</p>}
+
+            <button
+              type="submit"
+              disabled={loading}
+              className="mt-6 w-full px-3 py-2.5 text-center text-white bg-neutral-900 rounded-md"
+            >
+              {loading ? "Signing up..." : "Sign Up"}
+            </button>
+          </form>
+
+          <div className="flex gap-2.5 items-center mt-4 w-full text-xs font-medium text-center text-neutral-900">
+            <img loading="lazy" src="/line.svg" alt="" className="object-contain flex-1" />
+            <span className="mx-2">OR</span>
+            <img loading="lazy" src="/line.svg" alt="" className="object-contain flex-1" />
           </div>
 
           <div className="flex flex-col mt-4 w-full text-xs font-medium text-center text-gray-700 gap-3">
-            {socialButtons.map((button, index) => (
-              <SocialButton
-                key={index}
-                icon={button.icon}
-                text={button.text}
-                siteURL={button.links}
-                alt={button.alt}
-              />
-            ))}
+            <SocialButton icon="/google.svg" text="Sign in with Google" siteURL="https://accounts.google.com" alt="Google logo" />
           </div>
 
-          <div className="flex gap-0.5 items-center self-start mt-4 text-xs text-center">
-            <span className="self-stretch my-auto font-medium text-neutral-900">
-              Dont have an account?{" "}
-            </span>
-            <Link href={"login"} className="self-stretch my-auto font-bold text-neutral-900">
-             Login
-            </Link>
+          <div className="flex gap-0.5 items-center mt-4 text-xs text-center">
+            <span className="font-medium text-neutral-900">Already have an account? </span>
+            <Link href="/login" className="font-bold text-neutral-900">Login</Link>
           </div>
-        </form>
-    </div>
-</div>
-<div className="right">
-    <div className="flex overflow-hidden flex-col  rounded-md  max-md:px-5 max-md:py-10">
-      <div className="self-start text-5xl font-medium tracking-tighter max-md:max-w-full max-md:text-4xl">
-      Start Your Journey with Powerful WhatsApp Marketing Tools.
+        </div>
       </div>
-      <div className="flex gap-6 items-center mt-10 max-md:mt-10 max-md:max-w-full">
-      <ul className="list-disc">
-  {Object.values(ListFeatures).map((feature, index) => (
-    <li key={index} className="py-2">
-      {feature}
-    </li>
-  ))}
-</ul>
 
-      </div>
+      <ToastContainer />
     </div>
-</div>
-</div>
-    </div>
-  )
+  );
 }

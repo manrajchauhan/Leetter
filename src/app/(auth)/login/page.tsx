@@ -1,115 +1,117 @@
-"use client"
+"use client";
+
 import Link from "next/link";
+import { useForm, Controller } from "react-hook-form";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 import { InputField } from "./InputField";
 import { SocialButton } from "./SocialButton";
+import { toast, ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Login() {
+  const router = useRouter();
+  const { control, handleSubmit, formState: { errors } } = useForm();
+  const [isLoading, setIsLoading] = useState(false);
 
-    const socialButtons = [
-      {
-        icon: "/google.svg",
-        links: "https//:accounts.google.com",
-        text: "Sign in with Google",
-        alt: "Google logo"
+  useEffect(() => {
+    const token = localStorage.getItem("authToken");
+    if (token) {
+      router.push("/user/broadcast");
+    }
+  }, [router]);
+
+  const onSubmit = async (data: any) => {
+    setIsLoading(true);
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: data.email,
+          password: data.password,
+        }),
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        localStorage.setItem("authToken", result.token);
+        toast.success("Login Successful! 🎉");
+        router.push("/user/broadcast?loggedIn=true");
+      } else {
+        toast.error("Invalid credentials. Please try again.");
       }
-    ];
+    } catch (error) {
+      toast.error("An error occurred. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    return (
-    <div className="font-[family-name:var(--font-geist-sans)] ">
-        <Link href={"/"}>
-        <img
-    src="logo.svg"
-    width={200}
-    height={200}
-    className="pt-10 pl-10"
-    />
-    </Link>
-<div className="flex flex-row gap-[16.5rem] row-start-2 px-32">
-<div className="left px-20 py-32">
-    <div className="flex gap-0 justify-center items-center">
-        <form className="flex flex-col justify-center w-full">
-          <div className="flex flex-col w-full text-xs font-medium">
-            <div className="flex flex-col w-full">
-              <div className="flex flex-col w-full">
-                <h1 className="text-lg text-neutral-900">Sign into Solsn Identity</h1>
-                <InputField
-                  label="Email"
-                  type="email"
-                //   value="manrajchauhan2023@gmail.com"
-                  required
-                />
-                <InputField
-                  label="Password"
-                  type="password"
-                //   value="*********"
-                  required
-                />
-              </div>
-            </div>
-            <button type="submit" className="overflow-hidden gap-1.5 self-stretch px-3 py-2.5 mt-6 w-full text-center text-white rounded-md bg-neutral-900 min-h-[32px] shadow-[0px_1px_2px_rgba(22,17,17,0.24)]">
-              Sign in
+  return (
+    <div className="login">
+      <Link href="/">
+        <img src="logo.svg" width={200} height={200} className="pt-10 pl-10" />
+      </Link>
+      <div className="flex flex-row gap-[16.5rem] row-start-2 px-32">
+        <div className="left px-20 py-32">
+          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col w-full">
+            <h1 className="text-lg text-neutral-900 font-medium">Sign into Leetter Identity</h1>
+
+            <Controller
+              name="email"
+              control={control}
+              defaultValue=""
+              rules={{
+                required: "Email is required",
+                pattern: {
+                  value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
+                  message: "Invalid email address",
+                },
+              }}
+              render={({ field }) => (
+                <InputField {...field} label="Email" type="email" placeholder="Enter Email Address" error={errors.email?.message?.toString()} />
+              )}
+            />
+
+            <Controller
+              name="password"
+              control={control}
+              defaultValue=""
+              rules={{ required: "Password is required" }}
+              render={({ field }) => (
+                <InputField {...field} label="Password" type="password" placeholder="Enter Password" error={errors.email?.message?.toString()} />
+              )}
+            />
+
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="mt-6 w-full px-3 py-2.5 text-center text-white bg-neutral-900 rounded-md"
+            >
+              {isLoading ? "Logging in..." : "Sign In"}
             </button>
-          </div>
+          </form>
 
-          <div className="flex gap-2.5 items-center mt-4 w-full text-xs font-medium text-center whitespace-nowrap text-neutral-900">
-            <img
-              loading="lazy"
-              src="/line.svg"
-              alt=""
-              className="object-contain flex-1 shrink self-stretch my-auto basis-0"
-            />
-            <div className="self-stretch my-auto">OR</div>
-            <img
-              loading="lazy"
-            src="/line.svg"
-              alt=""
-              className="object-contain flex-1 shrink self-stretch my-auto basis-0"
-            />
+          <div className="flex gap-2.5 items-center mt-4 w-full text-xs font-medium text-center text-neutral-900">
+            <img loading="lazy" src="/line.svg" alt="" className="object-contain flex-1" />
+            <span className="mx-2">OR</span>
+            <img loading="lazy" src="/line.svg" alt="" className="object-contain flex-1" />
           </div>
 
           <div className="flex flex-col mt-4 w-full text-xs font-medium text-center text-gray-700 gap-3">
-            {socialButtons.map((button, index) => (
-              <SocialButton
-                key={index}
-                icon={button.icon}
-                text={button.text}
-                siteURL={button.links}
-                alt={button.alt}
-              />
-            ))}
+            <SocialButton icon="/google.svg" text="Sign in with Google" siteURL="https://accounts.google.com" alt="Google logo" />
           </div>
 
-          <div className="flex gap-0.5 items-center self-start mt-4 text-xs text-center">
-            <span className="self-stretch my-auto font-medium text-neutral-900">
-              Dont have an account?{" "}
-            </span>
-            <Link href={"register"} className="self-stretch my-auto font-bold text-neutral-900">
-              Create one
-            </Link>
+          <div className="flex gap-0.5 items-center mt-4 text-xs text-center">
+            <span className="font-medium text-neutral-900">Don't have an account? </span>
+            <Link href="/register" className="font-bold text-neutral-900">Sign Up</Link>
           </div>
-        </form>
-    </div>
-</div>
-<div className="right">
-    <div className="flex overflow-hidden flex-col  rounded-md  max-md:px-5 max-md:py-18">
-      <div className="self-start text-5xl font-semibold tracking-tighter max-md:max-w-full max-md:text-4xl">
-        Empower Your Business with Seamless WhatsApp Marketing.
+        </div>
       </div>
-      <div className="flex gap-6 items-center self-center mt-10 max-md:mt-10 max-md:max-w-full">
-        <img
-          loading="lazy"
-          src="/screens/screen-1.png"
-          className="object-contain shrink-0 self-stretch my-auto rounded-none aspect-[0.49] w-[219px]"
-        />
-        <img
-          loading="lazy"
-         src="/screens/screen-2.png"
-          className="object-contain shrink-0 self-stretch my-auto rounded-none aspect-[0.49] w-[219px]"
-        />
-      </div>
+      <ToastContainer />
     </div>
-</div>
-</div>
-    </div>
-  )
+  );
 }

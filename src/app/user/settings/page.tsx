@@ -1,131 +1,80 @@
-import React from "react";
+"use client";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 export default function Profile() {
+  const [profileData, setProfileData] = useState<any>(null);
+  const [businessProfileData, setBusinessProfileData] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchBusinessProfile = async () => {
+      try {1
+        const profileResponse = await axios.get("/api/business-profile/profile");
+        setProfileData(profileResponse.data);
+
+        const businessProfileResponse = await axios.get("/api/business-profile");
+        setBusinessProfileData(businessProfileResponse.data?.data[0] || null);
+
+      } catch (err) {
+        setError("Failed to fetch business profile.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBusinessProfile();
+  }, []);
+
   return (
     <div className="p-6 w-full bg-white rounded-2xl max-md:px-4 max-md:max-w-full">
       <h1 className="text-xl font-semibold text-neutral-700 mb-6">Business Profile</h1>
 
       <div className="flex gap-20 max-md:flex-col">
-      <div className="flex flex-col max-md:w-full relative">
-  <img
-    loading="lazy"
-    src="/logo.svg"
-    className="object-contain aspect-square max-w-40 mt-4 max-md:ml-1 rounded-full "
-    alt="Business Logo"
-  />
+        {/* Profile Logo */}
+        <div className="flex flex-col max-md:w-full relative">
+        {loading ? (
+            <Skeleton className="w-40 h-40 rounded-full" />
+          ) : (
+            <img
+              loading="lazy"
+              src={businessProfileData?.profile_picture_url || "/logo.svg"}
+              className="object-contain aspect-square max-w-40 mt-4 max-md:ml-1 rounded-full"
+              alt="Business Logo"
+            />
+          )}
+        </div>
 
-  {/* Update Profile Icon */}
-  <div className="absolute top-4 right-4 p-2 border text-white rounded-full cursor-pointer">
-   <img src="/icons/camera.svg" alt="upload" className="h-5 w-5" />
-  </div>
-</div>
+        {/* Profile Details */}
         <div className="flex flex-col ml-5 max-md:ml-0 max-md:w-full">
           <form className="space-y-6 text-black max-md:mt-6">
             <div className="grid grid-cols-2 gap-6 max-md:grid-cols-1">
-              {/* Business Website 1 */}
-              <div>
-                <label className="text-base font-medium tracking-tight" htmlFor="businessWebsite1">Business Website 1</label>
-                <input
-                  id="businessWebsite1"
-                  type="url"
-                  value="https://solsn.com"
-                  disabled
-                  className="mt-2 px-3 py-2 rounded-lg bg-gray-100 font-light text-sm text-neutral-700 w-full"
-                />
-              </div>
+              {loading ? (
+                Array.from({ length: 6 }).map((_, index) => <Skeleton key={index} className="h-10 w-full" />)
+              ) : (
+                <>
+                  <InputField label="Business Name" value={profileData?.verified_name || "N/A"} />
+                  <InputField label="Display Phone" value={profileData?.display_phone_number || "N/A"} />
+                </>
+              )}
 
-              {/* Business Industry */}
-              <div>
-                <label className="text-base font-medium tracking-tight" htmlFor="businessIndustry">Business Industry</label>
-                <input
-                  id="businessIndustry"
-                  type="text"
-                  value="Professional Services"
-                  disabled
-                  className="mt-2 px-3 py-2 rounded-lg bg-gray-100 font-light text-sm text-neutral-700 w-full"
-                />
-              </div>
-
-              {/* Business Address */}
-              <div>
-                <label className="text-base font-medium tracking-tight" htmlFor="businessAddress">Business Address</label>
-                <input
-                  id="businessAddress"
-                  type="text"
-                  value="Navi Mumbai, Maharashtra - 410218"
-                  disabled
-                  className="mt-2 px-3 py-2 rounded-lg bg-gray-100 font-light text-sm text-neutral-700 w-full"
-                />
-              </div>
-
-              {/* Email for Business Contact */}
-              <div>
-                <label className="text-base font-medium tracking-tight" htmlFor="businessEmail">Email for Business Contact</label>
-                <input
-                  id="businessEmail"
-                  type="email"
-                  value="info@solsn.com"
-                  disabled
-                  className="mt-2 px-3 py-2 rounded-lg bg-gray-100 font-light text-sm text-neutral-700 w-full"
-                />
-              </div>
-
-              {/* Phone Number */}
-              <div>
-                <label className="text-base font-medium tracking-tight" htmlFor="phoneNumber">Phone Number</label>
-                <input
-                  id="phoneNumber"
-                  type="tel"
-                  value="+91 8850346213"
-                  disabled
-                  className="mt-2 px-3 py-2 rounded-lg bg-gray-100 font-light text-sm text-neutral-700 w-full"
-                />
-              </div>
-
-              {/* Business Website 2 */}
-              <div>
-                <label className="text-base font-medium tracking-tight" htmlFor="businessWebsite2">Business Website 2</label>
-                <input
-                  id="businessWebsite2"
-                  type="url"
-                  value="N/A"
-                  disabled
-                  className="mt-2 px-3 py-2 rounded-lg bg-gray-100 font-light text-sm text-neutral-700 w-full"
-                />
-              </div>
-
-              {/* About */}
-              <div>
-                <label className="text-base font-medium tracking-tight" htmlFor="about">About</label>
-                <input
-                  id="about"
-                  type="text"
-                  value="Available"
-                  disabled
-                  className="mt-2 px-3 py-2 rounded-lg bg-gray-100 font-light text-sm text-neutral-700 w-full"
-                />
-              </div>
-
-              {/* Business Description */}
-              <div>
-                <label className="text-base font-medium tracking-tight" htmlFor="businessDescription">Business Description</label>
-                <input
-                  id="businessDescription"
-                  type="text"
-                  value="Web Development, Web Designing, Digital Marketing"
-                  disabled
-                  className="mt-2 px-3 py-2 rounded-lg bg-gray-100 font-light text-sm text-neutral-700 w-full"
-                />
-              </div>
-            </div>
-
-            <div className="flex justify-start mt-6">
-              <button
-                type="submit"
-                className="px-4 py-2 bg-green-600 text-white font-light text-sm rounded-lg hover:bg-green-500"
-              >
-                Save Changes
-              </button>
+{loading ? (
+                Array.from({ length: 6 }).map((_, index) => <Skeleton key={index} className="h-10 w-full" />)
+              ) : (
+                <>
+                  <InputField label="About" value={businessProfileData?.about} />
+                  <InputField label="Business Description" value={businessProfileData?.description} />
+                  <InputField label="Email for Business Contact" value={businessProfileData?.email} />
+                  <InputField label="Service Type" value={formatServiceType(businessProfileData?.vertical)} />
+                  {businessProfileData?.websites?.[0] && (
+                    <InputField label="Website 1" value={businessProfileData.websites[0]} />
+                  )}
+                  {businessProfileData?.websites?.[1] && (
+                    <InputField label="Website 2" value={businessProfileData.websites[1]} />
+                  )}
+                </>
+              )}
             </div>
           </form>
         </div>
@@ -133,3 +82,26 @@ export default function Profile() {
     </div>
   );
 }
+
+const formatServiceType = (type: string | undefined) => {
+  const serviceTypes: Record<string, string> = {
+    "PROF_SERVICES": "Professional Services",
+  };
+  return serviceTypes[type || ""] || "N/A";
+};
+
+const InputField = ({ label, value }: { label: string; value?: string }) => (
+  <div>
+    <label className="text-base font-medium tracking-tight">{label}</label>
+    <input
+      type="text"
+      value={value?.trim() ? value : "N/A"}
+      disabled
+      className="mt-2 px-3 py-2 rounded-lg bg-gray-100 font-light text-sm text-neutral-700 w-full"
+    />
+  </div>
+);
+
+const Skeleton = ({ className }: { className: string }) => (
+  <div className={`animate-pulse bg-neutral-100 rounded ${className}`} />
+);

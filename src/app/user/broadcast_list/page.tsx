@@ -1,4 +1,3 @@
-import Card from '@/components/ui/card'
 import Link from 'next/link'
 import React from 'react'
 
@@ -19,10 +18,10 @@ export default function Broadcast_lists() {
    <div className='flex px-4 py-10 justify-between'>
         <form action="" className='flex gap-10 text-center'>
         <h1 className='text-2xl font-bold mt-1'>Broadcast lists</h1>
-            <div className="flex bg-gray-100 border rounded-xl transition duration-200 ">
+            <div className="flex bg-white border rounded-xl transition duration-200 ">
               <input
                 type="search"
-                className="flex-1 px-4 py-2 bg-gray-100 outline-none rounded-xl transition duration-200"
+                className="flex-1 px-4 py-2 bg-white outline-none rounded-xl transition duration-200"
                 placeholder="Search here..."
               />
             </div>
@@ -38,9 +37,9 @@ export default function Broadcast_lists() {
         <thead>
           <tr className="border-b">
             <th className="px-6 py-3 text-left font-semibold text-neutral-900">Broadcast Name</th>
-            <th className="px-6 py-3 text-left font-semibold text-neutral-900">Email/Phone</th>
             <th className="px-6 py-3 text-left font-semibold text-neutral-900">Languages</th>
             <th className="px-6 py-3 text-left font-semibold text-neutral-900">Categories</th>
+            <th className="px-6 py-3 text-left font-semibold text-neutral-900">Status</th>
             <th className="px-6 py-3 text-left font-semibold text-neutral-900">Actions</th>
           </tr>
         </thead>

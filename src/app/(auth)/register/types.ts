@@ -7,7 +7,11 @@ export interface SocialButtonProps {
 
   export interface InputFieldProps {
     label: string;
-    type: "text" | "email" | "password" | "number";
-    value: string;
+    type: string;
+    name?: string;
+    error?: string;
+    placeholder?: string;
+    value?: string;
+    onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
     required?: boolean;
   }
